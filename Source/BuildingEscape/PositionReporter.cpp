@@ -20,6 +20,7 @@ void UPositionReporter::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
+	UE_LOG(LogTemp, Warning, TEXT("Position Reporter reporting for duty!"));
 	
 }
 
