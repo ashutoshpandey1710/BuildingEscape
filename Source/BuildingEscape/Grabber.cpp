@@ -33,6 +33,16 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 
 	// If physics handle is attached
 		// Move the object we're holding.
+	FVector ViewLocation;
+	FRotator ViewRotation;
+
+	this->PlayerController->GetPlayerViewPoint(ViewLocation, ViewRotation);
+	FVector LineHead = ViewLocation + ViewRotation.Vector() * this->Reach;
+
+
+	if (this->PhysicsHandle->GrabbedComponent) {
+		PhysicsHandle->SetTargetLocation(LineHead);
+	}
 }
 
 void UGrabber::FindPhysicsHandleComponent() {
@@ -83,7 +93,7 @@ const FHitResult UGrabber::GetFirstPhysicsBodyInRech() {
 
 		UE_LOG(LogTemp, Warning, TEXT("Ray Hit object %s."), *(HitActor->GetName()))
 	}
-	return FHitResult();
+	return hit;
 }
 
 void UGrabber::Grab() {
@@ -91,15 +101,29 @@ void UGrabber::Grab() {
 	
 
 	///Try and reach any actor with physics body collision set.
-	GetFirstPhysicsBodyInRech();
+	auto Hit = GetFirstPhysicsBodyInRech();
+	auto ComponentToGrab = Hit.GetComponent();
+	auto ActorHit = Hit.GetActor();
 
 	///If we hit something, attach a physics handle.
-	//TODO: Attach Physics handle.
+
+	if (ActorHit) {
+		// Attach Physics handle.
+		this->PhysicsHandle->GrabComponent(
+			ComponentToGrab,
+			NAME_None,
+			ComponentToGrab->GetOwner()->GetActorLocation(),
+			true // Allow rotation.
+		);
+	}
+
+	
 }
 
 
 void UGrabber::Release() {
 	UE_LOG(LogTemp, Warning, TEXT("Grab Released!"));
+	PhysicsHandle->ReleaseComponent();
 	//TODO Release physics handle
 }
 

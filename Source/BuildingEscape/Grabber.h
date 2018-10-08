@@ -6,8 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Engine/World.h"
-#include "DrawDebugHelpers.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "Components/PrimitiveComponent.h"
 #include "Grabber.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
