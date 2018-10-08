@@ -44,7 +44,12 @@ private:
 	void SetupInputComponent();
 
 	// Get the first PhysicsBody in reach.
-	const FHitResult GetFirstPhysicsBodyInRech();
+	const FHitResult GetFirstPhysicsBodyInReach();
+
+	FVector GetReachLineEnd();
+	FVector GetReachLineStart();
+
+	FHitResult GetFirstHitOfTrace(FVector& TraceStart, FVector &TraceEnd);
 
 	UPROPERTY(EditAnywhere)
 		float Reach = 100.0f;

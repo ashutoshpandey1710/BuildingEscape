@@ -7,6 +7,7 @@
 #include "Engine/TriggerVolume.h"
 #include "GameFramework/Actor.h"
 #include "Engine/World.h"
+#include "Components/PrimitiveComponent.h"
 #include "OpenDoor.generated.h"
 
 
@@ -29,6 +30,9 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	//Returns total mass in kilograms.
+	float GetTotalMassOfActorsOnPlate(void);
+
 private:
 	UPROPERTY(VisibleAnywhere)
 		float CloseAngle = 90.0f;
@@ -36,7 +40,6 @@ private:
 	UPROPERTY(EditAnywhere)
 		ATriggerVolume* PressurePlate;
 
-	AActor* ActorThatOpens;
 	AActor* Owner;
 
 	UPROPERTY(EditAnywhere)
