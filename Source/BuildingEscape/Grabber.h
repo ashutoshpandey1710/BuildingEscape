@@ -7,8 +7,8 @@
 #include "GameFramework/PlayerController.h"
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Grabber.generated.h"
-
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BUILDINGESCAPE_API UGrabber : public UActorComponent
@@ -30,6 +30,21 @@ public:
 private:
 	APlayerController* PlayerController;
 	UWorld* World;
+	UPhysicsHandleComponent* PhysicsHandle = nullptr;
+	UInputComponent* InputComponent = nullptr;
+
+	///Ray cast and grab what's in reach.
+	void Grab();
+	void Release();
+
+	// Find attached physics component.
+	void FindPhysicsHandleComponent();
+
+	// Setup (assumed) attached input component.
+	void SetupInputComponent();
+
+	// Get the first PhysicsBody in reach.
+	const FHitResult GetFirstPhysicsBodyInRech();
 
 	UPROPERTY(EditAnywhere)
 		float Reach = 100.0f;

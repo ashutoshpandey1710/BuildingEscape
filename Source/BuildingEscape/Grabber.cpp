@@ -17,13 +17,13 @@ UGrabber::UGrabber()
 
 
 // Called when the game starts
-void UGrabber::BeginPlay()
-{
+void UGrabber::BeginPlay() {
 	Super::BeginPlay();
 
-	//UE_LOG(LogTemp, Log, TEXT("Grabber reporting for duty!"));
 	this->World = GetWorld();
 	this->PlayerController = this->World->GetFirstPlayerController();
+	this->FindPhysicsHandleComponent();
+	this->SetupInputComponent();
 }
 
 
@@ -31,17 +31,41 @@ void UGrabber::BeginPlay()
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	// If physics handle is attached
+		// Move the object we're holding.
+}
+
+void UGrabber::FindPhysicsHandleComponent() {
+	///Look for attached physics handle.
+	this->PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	if (this->PhysicsHandle) {
+		UE_LOG(LogTemp, Warning, TEXT("Physics Handle is indeed attachded! Name: %s."), *(this->PhysicsHandle->GetName()));
+	}
+	else {
+		UE_LOG(LogTemp, Error, TEXT("Physics Handle is NOT attachded!"));
+	}
+}
+
+///Looking for input component.
+void UGrabber::SetupInputComponent() {
+	this->InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
+	if (this->InputComponent) {
+		UE_LOG(LogTemp, Warning, TEXT("Input Component is here! Rejoice! Name: %s."), *(this->InputComponent->GetName()));
+		this->InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
+		this->InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::Release);
+	}
+	else {
+		UE_LOG(LogTemp, Error, TEXT("Input Handle is NOT attachded!"));
+	}
+}
+
+const FHitResult UGrabber::GetFirstPhysicsBodyInRech() {
 	FVector ViewLocation;
 	FRotator ViewRotation;
 
 	this->PlayerController->GetPlayerViewPoint(ViewLocation, ViewRotation);
-
-	//FString rotation = ViewRotation.ToString();
-	//UE_LOG(LogTemp, Warning, TEXT("The player is looking at %s."), *rotation)
-
 	FVector LineHead = ViewLocation + ViewRotation.Vector() * this->Reach;
-	DrawDebugLine(GetWorld(), ViewLocation, LineHead, FColor(255, 0, 0), false, 0.0f, 0.0f, 10.0f);
-
+	
 	///Setup query parameters.
 	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
 
@@ -54,12 +78,28 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		LineHead,
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
 		TraceParams
-	))
-	{
+	)) {
 		AActor* HitActor = hit.GetActor();
 
 		UE_LOG(LogTemp, Warning, TEXT("Ray Hit object %s."), *(HitActor->GetName()))
 	}
+	return FHitResult();
+}
 
+void UGrabber::Grab() {
+	UE_LOG(LogTemp, Warning, TEXT("Grab Pressed!"));
+	
+
+	///Try and reach any actor with physics body collision set.
+	GetFirstPhysicsBodyInRech();
+
+	///If we hit something, attach a physics handle.
+	//TODO: Attach Physics handle.
+}
+
+
+void UGrabber::Release() {
+	UE_LOG(LogTemp, Warning, TEXT("Grab Released!"));
+	//TODO Release physics handle
 }
 
