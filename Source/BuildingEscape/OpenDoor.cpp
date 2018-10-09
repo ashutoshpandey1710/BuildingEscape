@@ -25,30 +25,16 @@ void UOpenDoor::BeginPlay()
 	}
 }
 
-void UOpenDoor::OpenDoor() 
-{
-	this->Owner->SetActorRotation(FRotator(0.0f, 0.0f, 0.0f));
-}
-
-void UOpenDoor::CloseDoor() 
-{
-	this->Owner->SetActorRotation(FRotator(0.0f, this->CloseAngle, 0.0f));
-}
-
 // Called every frame
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// Poll the trigger volume.
-	if (GetTotalMassOfActorsOnPlate() > 20.0f) { // TODO Make into an editable parameter.
-		this->OpenDoor();
-		this->LastDoorOpenTime = GetWorld()->GetTimeSeconds();
+	if (GetTotalMassOfActorsOnPlate() > this->TriggerMass) {
+		this->OnOpen.Broadcast();
 	}
-
-	// Close door after 1 sec of not standing on P plate.
-	if ((GetWorld()->GetTimeSeconds() - this->LastDoorOpenTime) >= this->DoorCloseDelay)
-	{
-		this->CloseDoor();
+	else{
+		this->OnClose.Broadcast();
 	}
 }
 
