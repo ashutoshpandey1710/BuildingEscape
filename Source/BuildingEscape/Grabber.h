@@ -28,8 +28,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
-	APlayerController* PlayerController;
-	UWorld* World;
+	APlayerController* PlayerController = nullptr;
+	UWorld* World = nullptr;
 	UPhysicsHandleComponent* PhysicsHandle = nullptr;
 	UInputComponent* InputComponent = nullptr;
 

@@ -19,6 +19,7 @@ void UGrabber::BeginPlay() {
 	Super::BeginPlay();
 
 	this->World = GetWorld();
+
 	this->PlayerController = this->World->GetFirstPlayerController();
 	this->FindPhysicsHandleComponent();
 	this->SetupInputComponent();
@@ -30,6 +31,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	/// If a physics body has been grabbed, set it's target locatoin to the current view (at the end of your reach) ie. line head.
+	if (!this->PhysicsHandle) { return; }
 	if (this->PhysicsHandle->GrabbedComponent) {
 		PhysicsHandle->SetTargetLocation(this->GetReachLineEnd());
 	}
