@@ -19,6 +19,10 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
 	this->Owner = GetOwner();
+
+	if (!this->PressurePlate) {
+		UE_LOG(LogTemp, Error, TEXT("No pressure plate attached to door %s!"), *(this->GetOwner()->GetName()));
+	}
 }
 
 void UOpenDoor::OpenDoor() 
@@ -55,6 +59,9 @@ float UOpenDoor::GetTotalMassOfActorsOnPlate(void) {
 	// Iterate over them to get their total mass.
 
 	TArray<AActor*> OverlappingActors;
+
+	if (!this->PressurePlate) { return TotalMass; }
+
 	this->PressurePlate->GetOverlappingActors(OUT OverlappingActors);
 
 	for (int i = 0; i < OverlappingActors.Num(); i++) {

@@ -20,7 +20,18 @@ void UGrabber::BeginPlay() {
 
 	this->World = GetWorld();
 
+	if (!this->World) {
+		UE_LOG(LogTemp, Error, TEXT("World is nullptr (line 24 @ Grabber.cpp)!"));
+		exit(1);
+	}
+
 	this->PlayerController = this->World->GetFirstPlayerController();
+
+	if (!this->PlayerController) {
+		UE_LOG(LogTemp, Error, TEXT("PlayerController is nullptr (line 26 @ Grabber.cpp)!"));
+		exit(1);
+	}
+
 	this->FindPhysicsHandleComponent();
 	this->SetupInputComponent();
 }
@@ -31,17 +42,17 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	/// If a physics body has been grabbed, set it's target locatoin to the current view (at the end of your reach) ie. line head.
-	if (!this->PhysicsHandle) { return; }
 	if (this->PhysicsHandle->GrabbedComponent) {
 		PhysicsHandle->SetTargetLocation(this->GetReachLineEnd());
 	}
+	else { return; }
 }
 
 void UGrabber::FindPhysicsHandleComponent() {
 	///Look for attached physics handle.
 	this->PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
 	if (!this->PhysicsHandle) {	
-		UE_LOG(LogTemp, Error, TEXT("Physics Handle is NOT attachded!"));
+		UE_LOG(LogTemp, Error, TEXT("No PhysicsHandle found for %s!"), *(GetOwner()->GetName()));
 	}
 }
 
@@ -108,11 +119,12 @@ void UGrabber::Grab() {
 
 	if (ActorHit) {
 		// Attach Physics handle.
-		this->PhysicsHandle->GrabComponent(
+		if (!this->PhysicsHandle) { return; }
+		this->PhysicsHandle->GrabComponentAtLocationWithRotation(
 			ComponentToGrab,
 			NAME_None,
 			ComponentToGrab->GetOwner()->GetActorLocation(),
-			true // Allow rotation.
+			FRotator(0.0f, 0.0f, 0.0f)
 		);
 	}
 
@@ -121,6 +133,7 @@ void UGrabber::Grab() {
 
 void UGrabber::Release() {
 	UE_LOG(LogTemp, Warning, TEXT("Grab Released!"));
+	if (!this->PhysicsHandle) { return; }
 	//Release physics handle
 	PhysicsHandle->ReleaseComponent();
 }
